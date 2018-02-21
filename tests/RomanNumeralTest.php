@@ -6,7 +6,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class RomanNumeralTest extends TestCase
 {
-    public function testIntergerToRomanNumerals()
+    public function testIntegerToRomanNumerals()
     {
         $class = new \App\IntegerConversion();
 
@@ -35,4 +35,5 @@ class RomanNumeralTest extends TestCase
         $this->assertEquals('MMMCMXCIX', $class->toRomanNumerals(3999));
         $this->assertEquals('MMXVI', $class->toRomanNumerals(2016));
     }
+
 }

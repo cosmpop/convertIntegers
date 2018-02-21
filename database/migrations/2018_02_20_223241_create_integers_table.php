@@ -13,7 +13,13 @@ class CreateIntegersTable extends Migration
      */
     public function up()
     {
-        //
+        Schema::create('integers', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('original_number')->unsigned();
+            $table->string('roman_number')->nullable(false);
+            $table->integer('nr_frequency')->unsigned();
+            $table->integer('created')->unsigned();
+        });
     }
 
     /**
@@ -23,6 +29,6 @@ class CreateIntegersTable extends Migration
      */
     public function down()
     {
-        //
+        Schema::drop('integers');
     }
 }

@@ -3,83 +3,98 @@
 namespace App\Http\Controllers;
 
 use App\Integer;
+use App\Transformers\IntegerTransformer;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use League\Fractal\Manager;
+use League\Fractal\Resource\Collection;
 
 class IntegerController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * @var Manager $fractal
      */
-    public function index()
+    private $fractal;
+
+    /**
+     * @var IntegerTransformer $integerTransformer
+     */
+    private $integerTransformer;
+
+    /**
+     * @var Integer $integer
+     */
+    private $integer;
+
+    public function __construct
+    (
+        Manager $fractal,
+        IntegerTransformer $integerTransformer,
+        Integer $integer
+    )
     {
-        //
+        $this->fractal = $fractal;
+        $this->integerTransformer = $integerTransformer;
+        $this->integer = $integer;
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Display a listing of all integers sort by created date desc
      *
-     * @return \Illuminate\Http\Response
+     * @return array
      */
-    public function create()
+    public function list()
     {
-        //
+        $integers = Integer::orderBy('created', 'desc')->get();
+
+        return $this->setData($integers);
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * create a new record in db.
+     * @param $request
+     * @return array
      */
-    public function store(Request $request)
+    public function create(Request $request)
     {
-        //
+        $number = (int) $request->request->get('number');
+
+        if(!$number || $number > Integer::LIMIT_VALUE)
+            return response()->json('Invalid number', Response::HTTP_BAD_REQUEST);
+
+        try {
+           $model = $this->integer->insert($number);
+           return $this->setData([$model]);
+        } catch (\Exception $e) {
+            return response()->json($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Integer  $integer
-     * @return \Illuminate\Http\Response
+     * get a limited list of integers order by frequency of every number
+     * @param $request
+     * @return array
      */
-    public function show(Integer $integer)
+    public function topConverted(Request $request)
     {
-        //
+        $offset = $request->query->get('offset', 0);
+        $limit = $request->query->get('limit', 10);
+        $integers = Integer::limit($limit)->offset($offset)->orderBy('nr_frequency', 'desc')->get();
+
+        return $this->setData($integers);
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Integer  $integer
-     * @return \Illuminate\Http\Response
+     * useful to transform data before using it in an API.
+     * @param $data
+     * @return array
      */
-    public function edit(Integer $integer)
+    private function setData($data)
     {
-        //
+        $collection = new Collection($data, $this->integerTransformer);
+        $data = $this->fractal->createData($collection);
+
+        return $data->toArray();
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Integer  $integer
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Integer $integer)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Integer  $integer
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Integer $integer)
-    {
-        //
-    }
 }

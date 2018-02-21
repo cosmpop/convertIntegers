@@ -14,3 +14,8 @@
 Route::get('/', function () {
     return 'Homepage';
 });
+
+
+Route::post('/integer/create', 'IntegerController@create');
+Route::get('/integer/list', 'IntegerController@list');
+Route::get('/integer/top-converted', 'IntegerController@topConverted');

@@ -19,3 +19,4 @@ Our client (Numeral McNumberFace) requires a simple API which will convert an in
  
  ## Submission Instructions
 - Please push your submission into either a public GitHub repo or a private repo, and give access to james.judd@netsells.co.uk
+# convertIntegers
