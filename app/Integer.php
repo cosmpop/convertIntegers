@@ -62,7 +62,7 @@ class Integer extends Model
 
         return $integer;
     }
-
+convertIn
     /**
      * get first integer row by numerical number
      * @param $number
@@ -72,4 +72,5 @@ class Integer extends Model
     {
         return self::where('original_number', $number)->first();
     }
+    
 }
